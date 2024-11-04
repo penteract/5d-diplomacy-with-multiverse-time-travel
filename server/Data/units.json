@@ -1,112 +1,67 @@
 [
   {
     "location": { "regionId": "Ank" },
-    "owner": "Turkey",
+    "owner": "Juggernaut",
     "type":  "Fleet"
   },
   {
     "location": { "regionId": "Ber" },
-    "owner": "Germany",
+    "owner": "Frankland",
     "type": "Army"
   },
   {
     "location": { "regionId": "Bre" },
-    "owner": "France",
+    "owner": "Frankland",
     "type": "Fleet"
-  },
-  {
-    "location": { "regionId": "Bud" },
-    "owner": "Austria",
-    "type": "Army"
   },
   {
     "location": { "regionId": "Con" },
-    "owner": "Turkey",
+    "owner": "Juggernaut",
     "type": "Army"
-  },
-  {
-    "location": { "regionId": "Edi" },
-    "owner": "England",
-    "type": "Fleet"
   },
   {
     "location": { "regionId": "Kie" },
-    "owner": "Germany",
+    "owner": "Frankland",
     "type": "Fleet"
-  },
-  {
-    "location": { "regionId": "Lon" },
-    "owner": "England",
-    "type": "Fleet"
-  },
-  {
-    "location": { "regionId": "Lvp" },
-    "owner": "England",
-    "type": "Army"
   },
   {
     "location": { "regionId": "Mar" },
-    "owner": "France",
+    "owner": "Frankland",
     "type": "Army"
   },
   {
     "location": { "regionId": "Mos" },
-    "owner": "Russia",
+    "owner": "Juggernaut",
     "type": "Army"
   },
   {
     "location": { "regionId": "Mun" },
-    "owner": "Germany",
+    "owner": "Frankland",
     "type": "Army"
-  },
-  {
-    "location": { "regionId": "Nap" },
-    "owner": "Italy",
-    "type": "Fleet"
   },
   {
     "location": { "regionId": "Par" },
-    "owner": "France",
-    "type": "Army"
-  },
-  {
-    "location": { "regionId": "Rom" },
-    "owner": "Italy",
+    "owner": "Frankland",
     "type": "Army"
   },
   {
     "location": { "regionId": "Sev" },
-    "owner": "Russia",
+    "owner": "Juggernaut",
     "type": "Fleet"
   },
   {
     "location": { "regionId": "Smy" },
-    "owner": "Turkey",
+    "owner": "Juggernaut",
     "type": "Army"
   },
   {
     "location": { "regionId": "Stp_S" },
-    "owner": "Russia",
+    "owner": "Juggernaut",
     "type": "Fleet"
-  },
-  {
-    "location": { "regionId": "Tri" },
-    "owner": "Austria",
-    "type": "Fleet"
-  },
-  {
-    "location": { "regionId": "Ven" },
-    "owner": "Italy",
-    "type": "Army"
-  },
-  {
-    "location": { "regionId": "Vie" },
-    "owner": "Austria",
-    "type": "Army"
   },
   {
     "location": { "regionId": "War" },
-    "owner": "Russia",
+    "owner": "Juggernaut",
     "type": "Army"
   }
 ]

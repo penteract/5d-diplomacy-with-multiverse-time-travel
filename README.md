@@ -1,4 +1,4 @@
-# 5D Diplomacy With Multiverse Time Travel
+# 5D Diplomacy With Multiverse Time Travel - 1v1 Variant
 
 A new standard in measuring how galaxy-brained you are, 5D Diplomacy With Multiverse Time Travel combines the classic game of pure negotiation with the modern classic game of pure disorientation. Can you convince your opponent to support an attack in the present while simultaneously backstabbing them five years ago and seven timelines over?
 

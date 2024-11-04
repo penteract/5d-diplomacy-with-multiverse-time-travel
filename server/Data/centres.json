@@ -1,36 +1,34 @@
 [
   {
     "location": { "regionId": "Ank" },
-    "owner": "Turkey"
+    "owner": "Juggernaut"
   },
   {
     "location": { "regionId": "Bel" }
   },
   {
     "location": { "regionId": "Ber" },
-    "owner": "Germany"
+    "owner": "Frankland"
   },
   {
     "location": { "regionId": "Bre" },
-    "owner": "France"
+    "owner": "Frankland"
   },
   {
-    "location": { "regionId": "Bud" },
-    "owner": "Austria"
+    "location": { "regionId": "Bud" }
   },
   {
     "location": { "regionId": "Bul" }
   },
   {
     "location": { "regionId": "Con" },
-    "owner": "Turkey"
+    "owner": "Juggernaut"
   },
   {
     "location": { "regionId": "Den" }
   },
   {
-    "location": { "regionId": "Edi" },
-    "owner": "England"
+    "location": { "regionId": "Edi" }
   },
   {
     "location": { "regionId": "Gre" }
@@ -40,45 +38,41 @@
   },
   {
     "location": { "regionId": "Kie" },
-    "owner": "Germany"
+    "owner": "Frankland"
   },
   {
-    "location": { "regionId": "Lon" },
-    "owner": "England"
+    "location": { "regionId": "Lon" }
   },
   {
-    "location": { "regionId": "Lvp" },
-    "owner": "England"
+    "location": { "regionId": "Lvp" }
   },
   {
     "location": { "regionId": "Mar" },
-    "owner": "France"
+    "owner": "Frankland"
   },
   {
     "location": { "regionId": "Mos" },
-    "owner": "Russia"
+    "owner": "Juggernaut"
   },
   {
     "location": { "regionId": "Mun" },
-    "owner": "Germany"
+    "owner": "Frankland"
   },
   {
-    "location": { "regionId": "Nap" },
-    "owner": "Italy"
+    "location": { "regionId": "Nap" }
   },
   {
     "location": { "regionId": "Nwy" }
   },
   {
     "location": { "regionId": "Par" },
-    "owner": "France"
+    "owner": "Frankland"
   },
   {
     "location": { "regionId": "Por" }
   },
   {
-    "location": { "regionId": "Rom" },
-    "owner": "Italy"
+    "location": { "regionId": "Rom" }
   },
   {
     "location": { "regionId": "Rum" }
@@ -88,39 +82,36 @@
   },
   {
     "location": { "regionId": "Sev" },
-    "owner": "Russia"
+    "owner": "Juggernaut"
   },
   {
     "location": { "regionId": "Smy" },
-    "owner": "Turkey"
+    "owner": "Juggernaut"
   },
   {
     "location": { "regionId": "Spa" }
   },
   {
     "location": { "regionId": "Stp" },
-    "owner": "Russia"
+    "owner": "Juggernaut"
   },
   {
     "location": { "regionId": "Swe" }
   },
   {
-    "location": { "regionId": "Tri" },
-    "owner": "Austria"
+    "location": { "regionId": "Tri" }
   },
   {
     "location": { "regionId": "Tun" }
   },
   {
-    "location": { "regionId": "Ven" },
-    "owner": "Italy"
+    "location": { "regionId": "Ven" }
   },
   {
-    "location": { "regionId": "Vie" },
-    "owner": "Austria"
+    "location": { "regionId": "Vie" }
   },
   {
     "location": { "regionId": "War" },
-    "owner": "Russia"
+    "owner": "Juggernaut"
   }
 ]
