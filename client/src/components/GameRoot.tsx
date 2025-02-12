@@ -10,6 +10,7 @@ import WorldError from './world/WorldError';
 import BoardArrowLayer from './world/arrows/BoardArrowLayer';
 import WorldContext from './context/WorldContext';
 import { getDefaultOffsetX, getDefaultOffsetY } from '../utils/navigationUtils';
+import BackgroundLayer from './world/BackgroundLayer';
 
 const GameRoot = () => {
   const { world, isLoading, error, retry } = useContext(WorldContext);
@@ -26,12 +27,13 @@ const GameRoot = () => {
         initialPositionX={getDefaultOffsetX()}
         initialPositionY={getDefaultOffsetY()}
         doubleClick={{ disabled: true }}
-        panning={{ excluded: ['input', 'select'] }}
+        panning={{ excluded: ['input', 'select'], velocityDisabled: true }}
       >
         {error && <WorldError error={error} retry={retry} isLoading={isLoading} />}
         {!world && <WorldLoading />}
         {!error && (
           <TransformComponent>
+            <BackgroundLayer />
             <BoardArrowLayer />
             <BoardLayer />
             <OrderLayer />
