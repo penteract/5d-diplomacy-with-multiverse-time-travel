@@ -7,15 +7,8 @@ services:
   backend:
     build: server/
     environment:
-      - "ConnectionStrings__Database=Server=mssql;Database=diplomacy;User=SA;Password=Passw0rd@;Encrypt=True;TrustServerCertificate=True"
-    restart: always
-  mssql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    user: root
-    environment:
-      - ACCEPT_EULA=y
-      - "MSSQL_SA_PASSWORD=Passw0rd@"
+      - "Provider=Sqlite"
+      - "ConnectionStrings__Sqlite=Data Source=./mount/5dDiplomacy.db"
     volumes:
-      - './mssql-data/data:/var/opt/mssql/data'
-      - './mssql-data/log:/var/opt/mssql/log'
-      - './mssql-data/secrets:/var/opt/mssql/secrets'
+      - ./server/mount:/app/mount
+    restart: always

@@ -15,34 +15,34 @@ public class Validator
     private readonly List<Order> nonRetreats;
     private readonly List<Order> retreats;
 
-    private readonly List<Region> regions;
-    private readonly List<Centre> centres;
+    private readonly RegionMap regionMap;
+    private readonly Dictionary<string, Centre> originalCentresByRegionId;
 
     private readonly AdjacencyValidator adjacencyValidator;
     private readonly ConvoyPathValidator convoyPathValidator;
 
-    public Validator(World world, List<Region> regions, List<Centre> centres, AdjacencyValidator adjacencyValidator)
+    public Validator(World world, RegionMap regionMap, List<Centre> originalCentres, AdjacencyValidator adjacencyValidator)
     {
         this.world = world;
-        this.regions = regions;
-        this.centres = centres;
+        this.regionMap = regionMap;
+        originalCentresByRegionId = originalCentres.ToDictionary(c => c.Location.RegionId);
         this.adjacencyValidator = adjacencyValidator;
 
-        nonRetreats = world.Orders.Where(o => o.NeedsValidation && !o.Unit.MustRetreat).ToList();
-        retreats = world.Orders.Where(o => o.NeedsValidation && o.Unit.MustRetreat).ToList();
+        nonRetreats = [.. world.Orders.Where(o => o.NeedsValidation && !o.Unit.MustRetreat)];
+        retreats = [.. world.Orders.Where(o => o.Status is OrderStatus.RetreatNew && o.Unit.MustRetreat)];
 
-        moves = nonRetreats.OfType<Move>().ToList();
-        supports = nonRetreats.OfType<Support>().ToList();
-        convoys = nonRetreats.OfType<Convoy>().ToList();
-        builds = nonRetreats.OfType<Build>().ToList();
-        disbands = nonRetreats.OfType<Disband>().ToList();
+        moves = [.. nonRetreats.OfType<Move>()];
+        supports = [.. nonRetreats.OfType<Support>()];
+        convoys = [.. nonRetreats.OfType<Convoy>()];
+        builds = [.. nonRetreats.OfType<Build>()];
+        disbands = [.. nonRetreats.OfType<Disband>()];
 
-        convoyPathValidator = new(world, convoys, regions, adjacencyValidator);
+        convoyPathValidator = new(world, convoys, regionMap, adjacencyValidator);
     }
 
     public void ValidateOrders()
     {
-        if (world.HasRetreats)
+        if (world.HasRetreats())
         {
             ValidateRetreats();
 
@@ -111,12 +111,12 @@ public class Validator
     {
         foreach (var convoy in convoys)
         {
-            var locationRegion = regions.First(r => r.Id == convoy.Location.RegionId);
-            var midpointRegion = regions.First(r => r.Id == convoy.Midpoint.RegionId);
-            var destinationRegion = regions.First(r => r.Id == convoy.Destination.RegionId);
+            var locationRegion = regionMap.GetRegion(convoy.Location.RegionId);
+            var midpointRegion = regionMap.GetRegion(convoy.Midpoint.RegionId);
+            var destinationRegion = regionMap.GetRegion(convoy.Destination.RegionId);
 
-            var midpointRegionChildren = regions.Where(r => r.ParentId == midpointRegion.Id);
-            var destinationRegionChildren = regions.Where(r => r.ParentId == destinationRegion.Id);
+            var midpointRegionChildren = regionMap.GetChildRegions(midpointRegion.Id);
+            var destinationRegionChildren = regionMap.GetChildRegions(destinationRegion.Id);
 
             if (locationRegion.Type != RegionType.Sea
                 || midpointRegion.Type != RegionType.Coast
@@ -138,7 +138,7 @@ public class Validator
 
     private void ValidateBuilds()
     {
-        var uniqueBuilds = builds.DistinctBy(b => b.Location).ToList();
+        var uniqueBuilds = builds.DistinctBy(b => b.Location).ToHashSet();
         var duplicateBuilds = builds.Where(b => !uniqueBuilds.Contains(b)).ToList();
 
         foreach (var build in uniqueBuilds)
@@ -150,14 +150,9 @@ public class Validator
             }
 
             var board = world.Boards.FirstOrDefault(b => b.Contains(build.Location));
-            var region = regions.First(r => r.Id == build.Location.RegionId);
-            var parentRegion = regions.FirstOrDefault(r => r.Id == region.ParentId);
+            var region = regionMap.GetRegion(build.Location.RegionId);
 
-            var originalCentre = centres.FirstOrDefault(c =>
-                c.Location.RegionId == region.Id
-                || c.Location.RegionId == parentRegion?.Id);
-
-            if (board == null || originalCentre == null)
+            if (board == null || !originalCentresByRegionId.TryGetValue(region.Parent?.Id ?? region.Id, out var originalCentre))
             {
                 build.Status = OrderStatus.Invalid;
                 continue;
@@ -188,7 +183,7 @@ public class Validator
 
     private void ValidateDisbands()
     {
-        var uniqueDisbands = disbands.DistinctBy(d => d.Location).ToList();
+        var uniqueDisbands = disbands.DistinctBy(d => d.Location).ToHashSet();
         var duplicateDisbands = disbands.Where(d => !uniqueDisbands.Contains(d)).ToList();
 
         foreach (var disband in uniqueDisbands)

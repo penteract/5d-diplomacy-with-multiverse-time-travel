@@ -1,7 +1,10 @@
 ﻿using Context;
 using Entities;
 using Enums;
+using Exceptions;
 using Factories;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 using Utilities;
 
 namespace Repositories;
@@ -12,6 +15,14 @@ public class GameRepository(ILogger<GameRepository> logger, GameContext context,
     private readonly GameContext context = context;
     private readonly DefaultWorldFactory defaultWorldFactory = defaultWorldFactory;
     private readonly Random random = new();
+
+    public async Task<Game> GetGame(int id)
+    {
+        logger.LogInformation("Fetching game {Id}", id);
+
+        var game = await context.Games.FindAsync(id) ?? throw new GameNotFoundException();
+        return game;
+    }
 
     public async Task<(Game game, Nation player)> CreateNormalGame(Nation? player, bool hasStrictAdjacencies)
     {
@@ -60,16 +71,18 @@ public class GameRepository(ILogger<GameRepository> logger, GameContext context,
     {
         logger.LogInformation("Joining game {Id} as player {Player}", id, player);
 
-        var game = await context.Games.FindAsync(id) ?? throw new KeyNotFoundException("Game not found");
+        await using var transaction = await context.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+        var game = await context.Games.FindAsync(id) ?? throw new GameNotFoundException();
 
         if (game.IsSandbox)
         {
-            throw new InvalidOperationException("Can't join sandbox game when requesting to join normal game");
+            throw new GameInvalidException("Can't join sandbox game when requesting to join normal game");
         }
 
         var chosenPlayer = player ?? GetRandomNation(game.Players);
         game.Players.Add(chosenPlayer);
         await context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
         return (game, chosenPlayer);
     }
@@ -78,11 +91,13 @@ public class GameRepository(ILogger<GameRepository> logger, GameContext context,
     {
         logger.LogInformation("Joining sandbox game {Id}", id);
 
-        var game = await context.Games.FindAsync(id) ?? throw new KeyNotFoundException("Game not found");
+        var game = await context.Games
+            .AsNoTracking()
+            .SingleOrDefaultAsync(g => g.Id == id) ?? throw new GameNotFoundException();
 
         return game.IsSandbox
             ? game
-            : throw new InvalidOperationException("Can't join non-sandbox when requesting to join sandbox game");
+            : throw new GameInvalidException("Can't join non-sandbox when requesting to join sandbox game");
     }
 
     private Nation GetRandomNation(List<Nation> existingNations)
@@ -90,7 +105,7 @@ public class GameRepository(ILogger<GameRepository> logger, GameContext context,
         var availableNations = Constants.Nations.Except(existingNations);
         if (!availableNations.Any())
         {
-            throw new InvalidOperationException("Can't rejoin full game as random nation");
+            throw new GameInvalidException("Can't rejoin full game as random nation");
         }
 
         var player = availableNations.ElementAt(random.Next(availableNations.Count()));

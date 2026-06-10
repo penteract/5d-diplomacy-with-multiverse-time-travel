@@ -3,24 +3,25 @@ import Nation from '../../types/enums/nation';
 import colours from '../../utils/colours';
 import WorldContext from '../context/WorldContext';
 import GameDetails from './GameDetails';
-import { getActiveBoards } from '../../types/board';
 import { filterUnique } from '../../utils/listUtils';
 import PlayerListItem from './PlayerListItem';
+import GameContext from '../context/GameContext';
 
 const PlayerList = () => {
-  const { world } = useContext(WorldContext);
+  const { game, playersSubmitted } = useContext(GameContext);
+  const { world, boardState } = useContext(WorldContext);
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [expandedPlayers, setExpandedPlayers] = useState<Nation[]>([]);
 
-  if (!world) return null;
+  if (!world || !boardState) return null;
   const { winner } = world;
 
-  const activeBoards = getActiveBoards(world.boards);
   const playerCentres = Object.values(Nation)
     .map((nation) => ({
       player: nation,
       centres: filterUnique(
-        activeBoards.flatMap((board) =>
+        boardState.activeBoards.flatMap((board) =>
           Object.keys(board.centres)
             .filter((region) => board.centres[region] === nation)
             .sort(),
@@ -45,11 +46,15 @@ const PlayerList = () => {
       >
         {playerCentres.map(({ player, centres }) => {
           const isExpanded = expandedPlayers.includes(player);
+          const hasSubmitted = playersSubmitted.includes(player);
+
           return (
             <PlayerListItem
               key={player}
               player={player}
               centres={centres}
+              showSubmissionIndicator={game !== null && game.player !== null}
+              hasSubmitted={hasSubmitted}
               winner={winner}
               isExpanded={isExpanded}
               toggleExpand={() =>

@@ -1,4 +1,5 @@
 using Enums;
+using Exceptions;
 using Mappers;
 using Microsoft.AspNetCore.Mvc;
 using Models;
@@ -66,15 +67,33 @@ public class GameController(
                 return Ok(new Game(game.Id, game.HasStrictAdjacencies, chosenPlayer));
             }
         }
-        catch (KeyNotFoundException)
+        catch (GameNotFoundException)
         {
             logger.LogError("Attempted to join non-existent game {GameId}", gameId);
             return NotFound($"No game with ID {gameId} found");
         }
-        catch (InvalidOperationException error)
+        catch (GameInvalidException error)
         {
             logger.LogWarning("Failed to join game {GameId}", gameId);
             return BadRequest(error.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("{gameId}/players/submitted")]
+    public async Task<ActionResult<List<Nation>>> GetPlayersSubmitted([FromRoute] int gameId)
+    {
+        logger.LogInformation("Fetching submitted players for game {GameId}", gameId);
+
+        try
+        {
+            var game = await gameRepository.GetGame(gameId);
+            return Ok(game.PlayersSubmitted);
+        }
+        catch (GameNotFoundException)
+        {
+            logger.LogError("Attempted to find submitted players for non-existent game {GameId}", gameId);
+            return NotFound($"No game with ID {gameId} found");
         }
     }
 
@@ -89,7 +108,7 @@ public class GameController(
             var world = await worldRepository.GetWorld(gameId);
             return Ok(entityMapper.MapWorld(world, player));
         }
-        catch (KeyNotFoundException)
+        catch (GameNotFoundException)
         {
             logger.LogWarning("Failed to find world with ID {GameId}", gameId);
             return NotFound($"No world with game ID {gameId} found");
@@ -107,7 +126,7 @@ public class GameController(
             var iteration = await worldRepository.GetIteration(gameId);
             return Ok(iteration);
         }
-        catch (KeyNotFoundException)
+        catch (GameNotFoundException)
         {
             logger.LogWarning("Failed to find world with ID {GameId}", gameId);
             return NotFound($"No world with game ID {gameId} found");
@@ -140,7 +159,7 @@ public class GameController(
             await worldRepository.AddOrders(gameId, players, mappedOrders);
             return Ok();
         }
-        catch (KeyNotFoundException)
+        catch (GameNotFoundException)
         {
             logger.LogWarning("Failed to find world with ID {GameId}", gameId);
             return NotFound($"No world with game ID {gameId} found");

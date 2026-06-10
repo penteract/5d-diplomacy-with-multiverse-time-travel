@@ -5,10 +5,10 @@ WORKDIR /app
 COPY . /app
 RUN dotnet build -c Release -o bin
 
-RUN dotnet tool install --global dotnet-ef
+RUN dotnet tool install --global dotnet-ef --version 9.0.11
 
 RUN echo "#!/bin/sh" >> /app/docker-entrypoint.sh \
-  && echo "~/.dotnet/tools/dotnet-ef database update" >> /app/docker-entrypoint.sh \
+  && echo "~/.dotnet/tools/dotnet-ef database update --context SqliteGameContext" >> /app/docker-entrypoint.sh \
   && echo "dotnet /app/bin/5dDiplomacyWithMultiverseTimeTravel.dll" >> /app/docker-entrypoint.sh \
   && chmod +x /app/docker-entrypoint.sh
 

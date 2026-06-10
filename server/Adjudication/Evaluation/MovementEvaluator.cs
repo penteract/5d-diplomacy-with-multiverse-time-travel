@@ -3,7 +3,7 @@ using Enums;
 
 namespace Adjudication;
 
-public class MovementEvaluator(World world, List<Order> activeOrders, List<Region> regions, AdjacencyValidator adjacencyValidator)
+public class MovementEvaluator(World world, List<Order> activeOrders, RegionMap regionMap, AdjacencyValidator adjacencyValidator)
 {
     private readonly World world = world;
     private readonly List<Order> activeOrders = activeOrders;
@@ -14,7 +14,7 @@ public class MovementEvaluator(World world, List<Order> activeOrders, List<Regio
     {
         LinkSupports();
 
-        var orderSetResolver = new OrderSetResolver(world, activeOrders, regions, adjacencyValidator);
+        var orderSetResolver = new OrderSetResolver(world, activeOrders, regionMap, adjacencyValidator);
         orderSetResolver.RunResolutionAlgorithm();
 
         IdentifyRetreats();
@@ -26,7 +26,7 @@ public class MovementEvaluator(World world, List<Order> activeOrders, List<Regio
 
         foreach (var support in supports)
         {
-            var supportedOrder = activeOrders.First(o => o.Location == support.Midpoint);
+            var supportedOrder = activeOrders.First(o => adjacencyValidator.EqualsOrIsRelated(o.Location, support.Midpoint));
             supportedOrder.Supports.Add(support);
         }
     }
@@ -40,22 +40,17 @@ public class MovementEvaluator(World world, List<Order> activeOrders, List<Regio
 
         List<Order> stationaryOrders = [.. holds, .. supports, .. convoys, .. moves.Where(m => m.Status is OrderStatus.Failure or OrderStatus.Invalid)];
 
+        var existingRetreats = world.Orders.Where(o => o.IsRetreat()).ToList();
+
         foreach (var order in activeOrders)
         {
             var unit = order.Unit;
 
-            var existingRetreats = world.Orders
-                .Where(o =>
-                    o.Unit == unit
-                    && o.Status is OrderStatus.RetreatNew
-                    or OrderStatus.RetreatSuccess
-                    or OrderStatus.RetreatFailure
-                    or OrderStatus.RetreatInvalid)
-                .ToList();
+            var existingRetreatsForUnit = existingRetreats.Where(o => o.Unit == unit).ToList();
 
-            foreach (var existingRetreat in existingRetreats)
+            foreach (var existingRetreatForUnit in existingRetreatsForUnit)
             {
-                world.Orders.Remove(existingRetreat);
+                world.Orders.Remove(existingRetreatForUnit);
             }
 
             var isSuccessfulMove = order is Move && order.Status == OrderStatus.Success;
@@ -69,7 +64,7 @@ public class MovementEvaluator(World world, List<Order> activeOrders, List<Regio
                 continue;
             }
 
-            var canEscape = CanEscape(unit, stationaryOrders, moves.ToList());
+            var canEscape = CanEscape(unit, stationaryOrders, [.. moves]);
 
             if (canEscape)
             {

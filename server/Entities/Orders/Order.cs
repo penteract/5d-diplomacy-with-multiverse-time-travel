@@ -21,8 +21,7 @@ public abstract class Order
     [NotMapped]
     public virtual bool NeedsValidation => Status is OrderStatus.New or OrderStatus.RetreatNew;
 
-    [NotMapped]
-    public virtual List<Location> TouchedLocations => [Location];
+    public virtual Location[] TouchedLocations() => [Location];
 
     [NotMapped]
     public OrderStrength HoldStrength { get; set; } = new();
@@ -31,4 +30,10 @@ public abstract class Order
     public List<Support> Supports { get; set; } = [];
 
     public abstract override string ToString();
+
+    public bool IsRetreat() => Status
+        is OrderStatus.RetreatNew
+        or OrderStatus.RetreatSuccess
+        or OrderStatus.RetreatFailure
+        or OrderStatus.RetreatInvalid;
 }

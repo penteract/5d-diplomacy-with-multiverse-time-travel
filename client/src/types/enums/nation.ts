@@ -1,4 +1,4 @@
-import colours from 'tailwindcss/colors';
+import themeColours from '../../utils/colours';
 
 enum Nation {
   Frankland = 'Frankland',
@@ -6,10 +6,10 @@ enum Nation {
 }
 
 export const getNationColour = (nation?: Nation, isEmphasised: boolean = true) => {
-  if (!nation) return colours.orange[isEmphasised ? 300 : 200];
+  if (!nation) return isEmphasised ? themeColours.unclaimedEmphasised : themeColours.unclaimedStandard;
   return {
-    [Nation.Juggernaut]: colours.red[isEmphasised ? 500 : 400],
-    [Nation.Frankland]: colours.blue[isEmphasised ? 500 : 400]
+    [Nation.Juggernaut]: isEmphasised ? themeColours.austriaEmphasised : themeColours.austriaStandard,
+    [Nation.Frankland]: isEmphasised ? themeColours.franceEmphasised : themeColours.franceStandard,
   }[nation];
 };
 

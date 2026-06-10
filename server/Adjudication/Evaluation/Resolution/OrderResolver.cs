@@ -7,7 +7,7 @@ public class OrderResolver(List<Order> orders, AdjacencyValidator adjacencyValid
 {
     private readonly AdjacencyValidator adjacencyValidator = adjacencyValidator;
 
-    private readonly List<Move> moves = orders.OfType<Move>().Where(m => m.Status != OrderStatus.Invalid).ToList();
+    private readonly List<Move> moves = [.. orders.OfType<Move>().Where(m => m.Status != OrderStatus.Invalid)];
 
     public void TryResolve(Order order)
     {
@@ -93,6 +93,11 @@ public class OrderResolver(List<Order> orders, AdjacencyValidator adjacencyValid
             if (destinationMove.Status == OrderStatus.Success)
             {
                 move.Status = OrderStatus.Success;
+            }
+
+            if (destinationMove.Status == OrderStatus.Failure)
+            {
+                move.Status = OrderStatus.Failure;
             }
 
             return;
