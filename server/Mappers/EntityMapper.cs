@@ -3,7 +3,9 @@
 namespace Mappers;
 
 public class EntityMapper
+    (ILogger<EntityMapper> logger)
 {
+    private readonly ILogger<EntityMapper> logger = logger;
     public Models.World MapWorld(Entities.World world, Nation? player = null)
     {
         var visibleOrders = player == null
@@ -11,7 +13,6 @@ public class EntityMapper
             : world.Orders.Where(o => o.Status is not OrderStatus.New and not OrderStatus.RetreatNew || o.Unit?.Owner == player);
 
         var builds = world.Orders.OfType<Entities.Build>().ToList();
-
         return new(world.Iteration,
             [.. world.Boards.Select(b => MapBoard(b, builds))],
             [.. visibleOrders.Select(MapOrder)],
@@ -21,7 +22,7 @@ public class EntityMapper
     public Models.Board MapBoard(Entities.Board board, List<Entities.Build> builds)
     {
         // Hide units created by builds on the same board
-        var visibleUnits = board.Units.Where(u => builds.All(o => o.Unit != u)).ToList();
+        var visibleUnits = board.Units.Where(u => builds.All(o => o.Unit.Id != u.Id)).ToList();
 
         return new(board.Timeline,
             board.Year,
